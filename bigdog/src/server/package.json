@@ -15,5 +15,8 @@
     "url": "https://github.com/scobelli/BigDog/issues"
   },
   "homepage": "https://github.com/scobelli/BigDog#readme",
-  "description": ""
+  "description": "",
+  "dependencies": {
+    "express": "^4.16.3"
+  }
 }
