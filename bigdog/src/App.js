@@ -42,7 +42,7 @@ class DisplayWinLoss extends React.Component{
 		super(props)
 	}
 	render(){
-		return(<div className='Row'><p className='disp text-center col-12'>Wins: 0</p><p className='disp text-center col-12'>Losses: 0</p></div>)
+		return(<div className='Row'><p id='wins' className='disp text-center col-12'>Wins: 0</p><p id='losses' className='disp text-center col-12'>Losses: 0</p></div>)
 	}
 }
 
@@ -51,6 +51,7 @@ class SubmitBet extends React.Component{
 		super(props)
 		this.state={submittedBet: null}
 		this.handleBetEntry=this.handleBetEntry.bind(this)
+
 	}
 	handleBetEntry(event){
 		event.preventDefault()
@@ -60,7 +61,7 @@ class SubmitBet extends React.Component{
 
 	}
 	render(){
-		return(<form className="col-12"onSubmit={this.handleBetEntry}><div><p className='prompt text-center'>Enter the amount you wish to bet: </p></div><div><input id='bet' className="center-block" type='text' ref='in'></input></div></form>)
+		return(<div className='col-12'><form className="col-12" onSubmit={e => e.preventDefault()}><div><p className='prompt text-center'>Enter the amount you wish to bet: </p></div><div><input id='bet' className="center-block" type='text' ref='in'></input></div></form><div className='col-12 '><button className='center-block mt-15 box ' onClick={this.handleBetEntry}>Submit</button></div></div>)
 	}
 
 }
@@ -111,7 +112,7 @@ class BreedSelect extends React.Component{
 
 	}
 	render(){
-		return(<div className='col-12 text-center'><h2 className="prompt">Select which breed you think will appear:</h2><div className='col-12 breeds'><select className='box'  onChange={this.handleBreedSelect}>{this.state.options}</select></div></div>)
+		return(<div className='col-12 text-center'><h2 className="prompt">Select which breed you think will appear:</h2><div className='col-12 breeds'><select id='bselect' className='box'  onChange={this.handleBreedSelect}>{this.state.options}</select></div></div>)
 
 	}
 }
@@ -119,7 +120,7 @@ class DogDisplay extends React.Component{
 	constructor(props){
 		super(props)
 		this.placeholderurl = 'http://via.placeholder.com/350x350'
-    	this.state = { currmon:500, displayed:"Currently displayed breed: None", breeds:[], selectedBreed:"--select breed--", imgurl: this.placeholderurl}
+    	this.state = { loadedbreed:"", currmon:500, displayed:"Currently displayed breed: None", breeds:[], selectedBreed:"--select breed--", imgurl: this.placeholderurl, tempurl:"", wins:0, losses:0}
     	this.handleSelectedChange=this.handleSelectedChange.bind(this)
     	this.handleBetSubmitted= this.handleBetSubmitted.bind(this)
 	}
@@ -127,7 +128,12 @@ class DogDisplay extends React.Component{
 	handleSelectedChange(event){
 
 		console.log(event)
-		if(event!=='--select breed--'){
+		
+	}
+
+	handleBetSubmitted(event){
+		var bselect= document.getElementById('bselect')
+		if(bselect.options[bselect.selectedIndex].value!=='--select breed--'){
 		 fetch('https://dog.ceo/api/breeds/image/random')
         .then(resp => resp.json())
         .then(jresp => {
@@ -144,7 +150,35 @@ class DogDisplay extends React.Component{
 		
 
           	console.log(temp)
-            this.setState({imgurl:jresp.message, displayed:"Currently displayed breed: " +temp[4].substr(0,1).toUpperCase()+temp[4].substr(1,temp[4].length)})}
+            this.setState({loadedbreed:temp[4].substr(0,1).toUpperCase()+temp[4].substr(1,temp[4].length),tempurl:jresp.message})
+
+		if(event!='' && event>0 && bselect.options[bselect.selectedIndex].value!=='--select breed--'){
+		console.log(this.state.currmon)
+		if(event<=this.state.currmon){
+		this.setState({imgurl:this.state.tempurl, displayed:"Currently displayed breed: "+this.state.loadedbreed})
+		console.log(bselect.options[bselect.selectedIndex].value)
+		console.log(this.state.loadedbreed)
+		if(bselect.options[bselect.selectedIndex].value==this.state.loadedbreed.split(" ")[0]){
+			document.getElementById('money').innerHTML="Money Available: $"+(this.state.currmon+event*10)
+		this.setState({currmon:this.state.currmon+event*10, wins:this.state.wins+1})
+		document.getElementById('wins').innerHTML="Wins: "+this.state.wins.toString()
+
+
+		}else{
+		document.getElementById('money').innerHTML="Money Available: $"+(this.state.currmon-event)
+		this.setState({currmon:this.state.currmon-event, losses:this.state.losses+1})
+		document.getElementById('losses').innerHTML="Losses: "+ this.state.losses.toString()
+		}
+		
+	}
+		else{
+			alert("Insufficient funds!")
+		}
+	}else{
+		alert("Invalid Entry, please fill out all fields and enter a bet of at least $1")
+	}
+
+        }
           else {
             this.setState({imgurl:this.placeholderurl})
           }
@@ -153,19 +187,8 @@ class DogDisplay extends React.Component{
         	 this.setState({imgurl:this.placeholderurl, displayed:"Currently displayed breed: None" })
 
         }
-	}
-
-	handleBetSubmitted(event){
 		console.log(event)
-		console.log(this.state.currmon)
-		if(event<=this.state.currmon){
-			document.getElementById('money').innerHTML="Money Available: $"+(this.state.currmon-event)
-		this.setState({currmon:this.state.currmon-event})
 		
-	}
-		else{
-			alert("Insufficient funds!")
-		}
 
 	
 }
