@@ -151,6 +151,7 @@ class DogDisplay extends React.Component{
         })
         .catch(err => console.log("ERR:", err))}else{
         	 this.setState({imgurl:this.placeholderurl, displayed:"Currently displayed breed: None" })
+        	 alert('Please select a breed')
 
         }
 		console.log(event)
