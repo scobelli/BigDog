@@ -5,6 +5,7 @@ from flask_cors import CORS
 import json
 import sys
 from pymongo import MongoClient
+from pprint import pprint
 
 # Set the app server syntax so we can define app routes/
 app = Flask(__name__)
@@ -19,7 +20,9 @@ db = client.sjc032
 collection = db.test_collection
 
 collection.insert({"name": "Allan"})
-print(db.collection_names())
+
+for cursor in collection.find({}):
+    pprint(cursor)
 
 #{name: string, money: float, wons: int, losses: int}
 
@@ -35,12 +38,12 @@ def update(params):
 
 @app.route('/login/<params>')
 def login(params):
-	print(params)
+    print(params)
     #check if login is in database, if so return information, if not create new account and return base info
     dic = {}
-	response = jsonify(dic)
-	response.headers.add('Access-Control-Allow-Origin', '*')
-	return response
+    response = jsonify(dic)
+    response.headers.add('Access-Control-Allow-Origin', '*')
+    return response
 
 
 
