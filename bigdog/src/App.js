@@ -91,7 +91,7 @@ class BreedSelect extends React.Component{
 	componentDidMount(){
 		fetch('https://dog.ceo/api/breeds/list')
       .then(result=>result.json())
-      .then(breeds=>this.setState({breeds:breeds.message}))
+      .then(breeds=>this.setState({breeds: breeds.message.map(u=>u.substr(0,1).toUpperCase()+u.substr(1,u.length))}))
       .then(res=>{ if (this.state.breeds.length === 0)
       this.setState({options: <option value="loading" key="loading">loading...</option>})
     else {
@@ -100,6 +100,7 @@ class BreedSelect extends React.Component{
         .map(b=>
             <option value={b} key={b}>{b}</option>
           )})
+	console.log(this.state.options[1])
      
     }})
       .catch(err=>console.log("Couldn't fetch dog breeds", err))
@@ -133,9 +134,17 @@ class DogDisplay extends React.Component{
           if (jresp.status === "success"){
           	console.log(jresp)
           	var temp= jresp.message.split('/')
+		var t2= temp[4]
+		temp[4]=temp[4].split('-')
+		if(temp[4].length>1){
+			temp[4]=temp[4][0]+ " ("+temp[4][1].substr(0,1).toUpperCase()+temp[4][1].substr(1,temp[4][1].length)+")"
+		}else{
+		temp[4]=t2
+		}
+		
 
           	console.log(temp)
-            this.setState({imgurl:jresp.message, displayed:"Currently displayed breed: " +temp[4]})}
+            this.setState({imgurl:jresp.message, displayed:"Currently displayed breed: " +temp[4].substr(0,1).toUpperCase()+temp[4].substr(1,temp[4].length)})}
           else {
             this.setState({imgurl:this.placeholderurl})
           }
