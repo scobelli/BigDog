@@ -2,4 +2,86 @@ body {
   margin: 0;
   padding: 0;
   font-family: sans-serif;
+  background-color: #003865!important;
+}
+
+.heading{
+	font-size: 70px;
+	margin-bottom: 20px;
+	text-decoration: underline;
+	color:#E87722;
+}
+
+.breeds{
+	display: block;
+	margin:auto 0px;
+	 text-align: center;
+	 margin-top: 10px;
+}
+.bets{
+	display: block;
+	margin:auto 0px;
+	 text-align: center;
+}
+
+.box{
+	width: 175px;
+	height: 25px;
+	font-size: 15px;
+}
+
+p{
+	font-size: 20px;
+	margin-top:10px;
+	word-wrap: break-word;
+	color:#59CBE8;
+}
+.prompt{
+	margin-top: 10px;
+	color:#FFA300;
+}
+
+img{
+	max-width: 350px;
+	max-height: 350px;
+}
+
+.textright{
+	text-align: right;
+}
+.textleft{
+	text-align: left;
+}
+.val{
+	padding: 0px;
+}
+.disp{
+	font-size: 20px;
+
+}
+.money{
+
+	padding-left: 5px;
+}
+.currbreed{
+	font-size: 30px;
+	color:#59CBE8;
+}
+
+.bord{
+	border-style: solid;
+	border-color: black;
+	border-width:4px;
+	box-shadow: 5px 5px 4px #000000;
+
+}
+
+#bet{
+	width: 150px;
+	height:35px;
+	font-size: 20px;
+}
+
+.mt-15{
+	margin-top:15px;
 }
