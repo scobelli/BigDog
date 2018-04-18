@@ -27,6 +27,18 @@ collection = db.test_collection
 
 #{name: string, money: float, wons: int, losses: int}
 
+@app.route('/money/<param>')
+def money(param):
+    userId = param
+    user = collection.find_one({"_id": userId})
+    user["money"] = user["money"] + 500
+    #updates information in user profile
+
+    collection.update_one({"_id": userId},{"$set": user})
+    response = jsonify(user)
+    response.headers.add('Access-Control-Allow-Origin', '*')
+    return response
+
 @app.route('/update/<params>')
 def update(params):
     info = params.split("&")

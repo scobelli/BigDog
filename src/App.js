@@ -5,6 +5,8 @@ import { Container } from 'reactstrap';
 import { Row } from 'reactstrap';
 import { GoogleLogin } from 'react-google-login';
 import ReactDOM from 'react-dom';
+import Timers from './timer.js';
+
 
 var SERVER_URL = "http://localhost:8000/"
 
@@ -105,13 +107,16 @@ class DogDisplay extends React.Component{
     				   losses:0,
     				   loggedIn: false,
     				   name: "",
-    				   id: ""}
+    				   id: "",
+    				   submitted: false}
     	this.handleSelectedChange=this.handleSelectedChange.bind(this)
     	this.handleBetSubmitted= this.handleBetSubmitted.bind(this)
     	this.handleGoogleInfomation = this.handleGoogleInfomation.bind(this)
 	}
 
-	componentDidMount(){    
+	componentDidMount(){
+		console.log("mounted")
+
 		const responseGoogle = (response) => {      
 		  var token = response.Zi.id_token;      
 		  fetch("https://www.googleapis.com/oauth2/v3/tokeninfo?id_token=" + token )
@@ -178,6 +183,11 @@ class DogDisplay extends React.Component{
 		console.log(event)		
 	}
 
+	changeDogPicture(){
+		console.log("change dog")
+		this.setState({imgurl: 'http://via.placeholder.com/350x350', submitted: false})
+	}
+
 	handleBetSubmitted(event){
 		var bselect= document.getElementById('bselect')
 		if(bselect.options[bselect.selectedIndex].value!=='--select breed--'){
@@ -223,6 +233,7 @@ class DogDisplay extends React.Component{
 				this.setState({currmon: currmon, 
 							   wins: wins,
 							   losses: losses,
+							   submitted: true
 							   })
 				console.log(json)        		
         	}).catch(error => console.log("ERROR", error))
@@ -230,7 +241,21 @@ class DogDisplay extends React.Component{
 		//update loss/win/money on frontend after changing it in backend		
 	}
 		else{
-			alert("Insufficient funds!")
+			alert("Insufficient funds! Adding 500 to your account.")
+			fetch(SERVER_URL+"money/"+this.state.id)
+	        	.then(resp =>{
+	        		var json = resp.json()
+	        		return json
+	        	}).then( json =>{
+					var currmon = json["money"]
+					var losses = json["losses"]
+					var wins = json["wins"]
+					this.setState({currmon: currmon, 
+								   wins: wins,
+								   losses: losses,
+								   })
+					console.log(json)        		
+	        	}).catch(error => console.log("ERROR", error))	
 		}
 	}else{
 		alert("Invalid Entry, please fill out all fields and enter a bet of at least $1")
@@ -252,9 +277,38 @@ class DogDisplay extends React.Component{
 	
 }
 	
+	/*
+	* param win: boolean value that is true if the person won
+	* param amountBet: amount of money the user bet
+	* param multipier: integer value for the odds, for example if odds were 1:81, multipler = 81
+	*/
+	updateDataBase(win, amountBet, multiplier){
+		if(win){
+			amountBet = amountBet * multiplier
+		}else{
+			amountBet = amountBet * -1
+		}
+
+		fetch(SERVER_URL+"update/"+this.state.id+"&"+amountBet)
+        	.then(resp =>{
+        		var json = resp.json()
+        		return json
+        	}).then( json =>{
+				var currmon = json["money"]
+				var losses = json["losses"]
+				var wins = json["wins"]
+				this.setState({currmon: currmon, 
+							   wins: wins,
+							   losses: losses,
+							   })
+				console.log(json)        		
+        	}).catch(error => console.log("ERROR", error))		
+	}
+
 	render(){
    		if(this.state.loggedIn){
 			return (<Container-fluid>
+						<Timers changeDogPicture={this.changeDogPicture.bind(this)} submit={this.state.submitted}/>
 						<Row className="col-12">
 						<div className='col-2'></div>
 						<div className="col-8 val" >
