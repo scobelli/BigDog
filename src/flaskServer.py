@@ -12,6 +12,8 @@ import uuid
 app = Flask(__name__)
 file = open("configure.json", "r")
 data = json.load(file)
+file.close()
+
 username = data["username"]
 password = data["password"]
 
