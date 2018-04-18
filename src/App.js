@@ -58,6 +58,18 @@ class OddsDisplay extends React.Component{
 	}
 }
 
+class BetSelect extends React.Component{
+	constructor(props){
+		super(props)
+
+	}
+	render(){
+		return (<div className="col-12"><p className='text-center prompt'>{'Select a bet type:' }</p></div><div className=' col-12 bets'><select className='box'><option>{'--select type--'}</option></select></div>)
+	}
+
+}
+
+
 class BreedSelect extends React.Component{
 	constructor(props){
 		super(props)
@@ -319,7 +331,7 @@ class DogDisplay extends React.Component{
 						<Row>
 							<div className="col-12 "><p className=" currbreed text-center"><b>{this.state.displayed}</b></p></div>
 							<img className="img-responsive center-block" src={this.state.imgurl}/>
-							<div className="col-12"><p className='text-center prompt'>{'Select a bet type:' }</p></div><div className=' col-12 bets'><select className='box'><option>{'--select type--'}</option></select></div>
+							<BetSelect />
 							<BreedSelect  onSelected={this.handleSelectedChange}/>
 							
 							
