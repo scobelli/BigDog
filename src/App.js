@@ -54,17 +54,65 @@ class OddsDisplay extends React.Component{
 		super(props)
 	}
 	render(){
-		return (<div className='col-12'><p className='prompt text-center'>Odds of winning: 1:81</p></div>)
+		return (<div className='col-12'><p className='prompt text-center'>{this.state.odds}</p></div>)
 	}
 }
 
 class BetSelect extends React.Component{
 	constructor(props){
 		super(props)
+		this.state={options:[]}
+		this.betChange=this.betChange.bind(this)
+		this.handleBreedSelected=this.handleBreedSelected.bind(this)
 
 	}
+	handleBreedSelected(event){
+	console.log(event.target.value)
+	this.props.onSelected(event.target.value)
+
+	}
+	
+	betChange(event){
+	console.log(event.target.value)
+	this.props.onBetSelected(event.target.value)
+	if(event.target.value=='All breeds'){
+	fetch('https://dog.ceo/api/breeds/list')
+      .then(result=>result.json())
+      .then(breeds=>this.setState({breeds: breeds.message.map(u=>u.substr(0,1).toUpperCase()+u.substr(1,u.length))}))
+      .then(res=>{ if (this.state.breeds.length === 0)
+      this.setState({options: <option value="loading" key="loading">loading...</option>})
+    else {
+
+      this.setState({options: ['--select breed--'].concat(this.state.breeds)
+        .map(b=>
+            <option value={b} key={b}>{b}</option>
+          )})
+	console.log(this.state.options[1])
+     
+    }})
+      .catch(err=>console.log("Couldn't fetch dog breeds", err))
+	}else if (event.target.value=='Hound breeds'){
+	fetch('https://dog.ceo/api/breed/hound/list')
+      .then(result=>result.json())
+      .then(breeds=>this.setState({breeds: breeds.message.map(u=>u.substr(0,1).toUpperCase()+u.substr(1,u.length))}))
+      .then(res=>{ if (this.state.breeds.length === 0)
+      this.setState({options: <option value="loading" key="loading">loading...</option>})
+    else {
+
+      this.setState({options: ['--select breed--'].concat(this.state.breeds)
+        .map(b=>
+            <option value={b} key={b}>{b}</option>
+          )})
+	console.log(this.state.options[1])
+     
+    }})
+      .catch(err=>console.log("Couldn't fetch dog breeds", err))
+	
+
+	}
+	}
 	render(){
-		return (<div className="col-12"><p className='text-center prompt'>{'Select a bet type:' }</p></div><div className=' col-12 bets'><select className='box'><option>{'--select type--'}</option></select></div>)
+		return (<div className="col-12"><div className="col-12"><p className='text-center prompt'>{'Select a bet type:' }</p></div><div className=' col-12 bets'><select className='box' onChange={this.betChange}><option>{'--select type--'}</option><option>{'All breeds'}</option><option>{'Hound breeds'}</option></select></div><div className='col-12 text-center'><h2 className="prompt">Select which breed you think will appear:</h2><div className='col-12 breeds'><select id='bselect' className='box'  onChange={this.handleBreedSelected}>{this.state.options}</select></div></div></div>)
 	}
 
 }
@@ -120,10 +168,14 @@ class DogDisplay extends React.Component{
     				   loggedIn: false,
     				   name: "",
     				   id: "",
-    				   submitted: false}
+    				   submitted: false,
+				   type:"",
+				   odds:""}
     	this.handleSelectedChange=this.handleSelectedChange.bind(this)
     	this.handleBetSubmitted= this.handleBetSubmitted.bind(this)
     	this.handleGoogleInfomation = this.handleGoogleInfomation.bind(this)
+	this.handleSelectedBet=this.handleSelectedBet.bind(this)
+	this.updateDataBase=this.updateDataBase.bind(this)
 	}
 
 	componentDidMount(){
@@ -190,19 +242,20 @@ class DogDisplay extends React.Component{
 		xmlHttp.open("GET", theUrl, true); // true for asynchronous request
 		xmlHttp.send(null);
 	}	
-	
+	handleSelectedBet(j){
+		console.log(j)
+		this.setState({type:j})
+		if(j==='All breeds'){
+		this.setState({odds:"Odds of winning: 1:81"})
+		
+		}else if (j==='Hound breeds'){
+		this.setState({odds:"Odds of winning: 1:6"})
+		
+		}
+	}
 	handleSelectedChange(event){
-		console.log(event)		
-	}
-
-	changeDogPicture(){
-		console.log("change dog")
-		this.setState({imgurl: 'http://via.placeholder.com/350x350', submitted: false})
-	}
-
-	handleBetSubmitted(event){
-		var bselect= document.getElementById('bselect')
-		if(bselect.options[bselect.selectedIndex].value!=='--select breed--'){
+		console.log(event)
+		if(this.state.type=='All breeds'){
 		 fetch('https://dog.ceo/api/breeds/image/random')
         .then(resp => resp.json())
         .then(jresp => {
@@ -219,75 +272,41 @@ class DogDisplay extends React.Component{
 		
 
         console.log(temp)
-        this.setState({loadedbreed:temp[4].substr(0,1).toUpperCase()+temp[4].substr(1,temp[4].length),tempurl:jresp.message})
-
-		if(event!='' && event>0 && bselect.options[bselect.selectedIndex].value!=='--select breed--'){
-		console.log(this.state.currmon)
-		if(event<=this.state.currmon){
-		this.setState({imgurl:this.state.tempurl, displayed:"Currently displayed breed: "+this.state.loadedbreed})
-		console.log(bselect.options[bselect.selectedIndex].value)
-		console.log(this.state.loadedbreed)
-
-		if(bselect.options[bselect.selectedIndex].value==this.state.loadedbreed.split(" ")[0]){
-			event = event*10   			
+        this.setState({loadedbreed:temp[4].substr(0,1).toUpperCase()+temp[4].substr(1,temp[4].length),tempurl:jresp.message,selectedBreed:event})
+		}		
+	})}
+	else if (this.state.type==='Hound breeds'){
+	fetch('https://dog.ceo/api/breed/hound/images/random')
+        .then(resp => resp.json())
+        .then(jresp => {
+          if (jresp.status === "success"){
+          	console.log(jresp)
+          	var temp= jresp.message.split('/')
+		var t2= temp[4]
+		temp[4]=temp[4].split('-')
+		if(temp[4].length>1){
+			temp[4]=temp[4][1].substr(0,1).toUpperCase()+temp[4][1].substr(1,temp[4][1].length)
 		}else{
-			event = event*-1
+		temp[4]=t2
 		}
 		
-		fetch(SERVER_URL+"update/"+this.state.id+"&"+event)
-        	.then(resp =>{
-        		var json = resp.json()
-        		return json
-        	}).then( json =>{
-				var currmon = json["money"]
-				var losses = json["losses"]
-				var wins = json["wins"]
-				this.setState({currmon: currmon, 
-							   wins: wins,
-							   losses: losses,
-							   submitted: true
-							   })
-				console.log(json)        		
-        	}).catch(error => console.log("ERROR", error))
-		
-		//update loss/win/money on frontend after changing it in backend		
-	}
-		else{
-			alert("Insufficient funds! Adding 500 to your account.")
-			fetch(SERVER_URL+"money/"+this.state.id)
-	        	.then(resp =>{
-	        		var json = resp.json()
-	        		return json
-	        	}).then( json =>{
-					var currmon = json["money"]
-					var losses = json["losses"]
-					var wins = json["wins"]
-					this.setState({currmon: currmon, 
-								   wins: wins,
-								   losses: losses,
-								   })
-					console.log(json)        		
-	        	}).catch(error => console.log("ERROR", error))	
+
+        console.log(temp)
+        this.setState({loadedbreed:temp[4].substr(0,1).toUpperCase()+temp[4].substr(1,temp[4].length),tempurl:jresp.message,selectedBreed:event})
 		}
-	}else{
-		alert("Invalid Entry, please fill out all fields and enter a bet of at least $1")
+
+	})}
+
+
+
+}
+
+	changeDogPicture(){
+		console.log("change dog")
+		this.setState({imgurl: 'http://via.placeholder.com/350x350', submitted: false})
 	}
-
-        }
-          else {
-            this.setState({imgurl:this.placeholderurl})
-          }
-        })
-        .catch(err => console.log("ERR:", err))}else{
-        	 this.setState({imgurl:this.placeholderurl, displayed:"Currently displayed breed: None" })
-        	 alert('Please select a breed')
-
-        }
-		console.log(event)
-		
 
 	
-}
 	
 	/*
 	* param win: boolean value that is true if the person won
@@ -316,6 +335,37 @@ class DogDisplay extends React.Component{
 				console.log(json)        		
         	}).catch(error => console.log("ERROR", error))		
 	}
+	handleBetSubmitted(o){
+		console.log(this.state.loadedbreed)
+		console.log(this.state.selectedBreed)
+		console.log(o)
+		if(o<1){
+		alert('You must enter a bet of at least 1$')
+		return
+		}
+		if(this.state.selectedBreed==="" || this.state.selectedBreed==="--select breed--"){
+		alert('Please select a breed to bet on')
+		return
+		}
+		var mult=0
+		if(this.state.type==='All breeds'){
+		this.setState({odds:"Odds of winning: 1:81"})
+		mult=10
+		}else if (this.state.type==='Hound breeds'){
+		this.setState({odds:"Odds of winning: 1:6"})
+		mult=5
+		}
+		this.setState({imgurl:this.state.tempurl,displayed:"Currently displayed breed: "+this.state.loadedbreed})
+		if(this.state.loadedbreed===this.state.selectedBreed){
+		this.updateDataBase(true, o, mult)
+		}else{
+		this.updateDataBase(false, o, mult)
+		}
+		this.handleSelectedChange(this.state.selectedBreed)
+		
+
+	
+}
 
 	render(){
    		if(this.state.loggedIn){
@@ -331,11 +381,11 @@ class DogDisplay extends React.Component{
 						<Row>
 							<div className="col-12 "><p className=" currbreed text-center"><b>{this.state.displayed}</b></p></div>
 							<img className="img-responsive center-block" src={this.state.imgurl}/>
-							<BetSelect />
-							<BreedSelect  onSelected={this.handleSelectedChange}/>
+							<BetSelect onSelected={this.handleSelectedChange} onBetSelected={this.handleSelectedBet}/>
 							
 							
-							<OddsDisplay/>
+							
+							<div className='col-12'><p className='prompt text-center'>{this.state.odds}</p></div>
 							<SubmitBet onBetEntry={this.handleBetSubmitted}/>
 						</Row>
 						</div>
