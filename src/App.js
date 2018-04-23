@@ -343,6 +343,10 @@ class DogDisplay extends React.Component{
 		alert('You must enter a bet of at least 1$')
 		return
 		}
+		if(this.state.currmon<o){
+		alert("Insufficient funds")
+		return 
+		}
 		if(this.state.selectedBreed==="" || this.state.selectedBreed==="--select breed--"){
 		alert('Please select a breed to bet on')
 		return
