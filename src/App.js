@@ -302,8 +302,10 @@ class DogDisplay extends React.Component{
 }
 
 	changeDogPicture(){
-		console.log("change dog")
-		this.setState({imgurl: 'http://via.placeholder.com/350x350', submitted: false})
+
+		this.setState({imgurl: 'http://via.placeholder.com/350x350', 
+					   submitted: false,
+					  displayed:"Currently displayed breed: None"})
 	}
 
 	
@@ -359,12 +361,18 @@ class DogDisplay extends React.Component{
 		this.setState({odds:"Odds of winning: 1:6"})
 		mult=5
 		}
-		this.setState({imgurl:this.state.tempurl,displayed:"Currently displayed breed: "+this.state.loadedbreed})
+
+		this.setState({imgurl:this.state.tempurl,displayed:"Currently displayed breed: "+this.state.loadedbreed, submitted: true})
 		if(this.state.loadedbreed===this.state.selectedBreed){
 		this.updateDataBase(true, o, mult)
 		}else{
 		this.updateDataBase(false, o, mult)
+		if(this.state.currmon<o*mult){
+				alert('You lost all your money. Reset back to 500.')
+			}
 		}
+
+
 		this.handleSelectedChange(this.state.selectedBreed)
 		
 

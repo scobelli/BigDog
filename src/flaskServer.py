@@ -78,9 +78,9 @@ def login(userId):
         user = {"_id": userId, "money": 500, "wins": 0, "losses": 0}
         collection.insert_one(user)
     
-    if user["money"] <= 0 :
-	user["money"] = 500
-	collection.update_one({"_id": userId},{"$set": user})
+    if user["money"] <= 0:
+        user["money"] = 500
+        collection.update_one({"_id": userId},{"$set": user})
 
     response = jsonify(user)
     response.headers.add('Access-Control-Allow-Origin', '*')
