@@ -15,7 +15,7 @@ body {
 .subheading{
 	font-size: 2vw;
 	margin-bottom: 20px;
-	color:#E87722;
+	color:#FFA300;
 	white-space:pre-wrap;
 }
 
@@ -24,6 +24,7 @@ body {
 	margin-bottom: 100px;
 	margin-top:5%;
 	color:#E87722;
+	text-shadow: 10px 10px #000000;
 	
 	white-space:pre-wrap;
 }
