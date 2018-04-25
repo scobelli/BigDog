@@ -130,9 +130,28 @@ class BetSelect extends React.Component{
 	
 
 	}
+	else if (event.target.value=='Bulldog breeds'){
+	fetch('https://dog.ceo/api/breed/bulldog/list')
+      .then(result=>result.json())
+      .then(breeds=>this.setState({breeds: breeds.message.map(u=>u.substr(0,1).toUpperCase()+u.substr(1,u.length))}))
+      .then(res=>{ if (this.state.breeds.length === 0)
+      this.setState({options: <option value="loading" key="loading">loading...</option>})
+    else {
+
+      this.setState({options: ['--select breed--'].concat(this.state.breeds)
+        .map(b=>
+            <option value={b} key={b}>{b}</option>
+          )})
+	console.log(this.state.options[1])
+     
+    }})
+      .catch(err=>console.log("Couldn't fetch dog breeds", err))
+	
+
+	}
 	}
 	render(){
-		return (<div className="col-12"><div className="col-12"><p className='text-center prompt'>{'Select a bet type:' }</p></div><div className=' col-12 bets'><select className='box' onChange={this.betChange}><option>{'--select type--'}</option><option>{'All breeds'}</option><option>{'Hound breeds'}</option><option>{'Spaniel breeds'}</option></select></div><div className='col-12 text-center'><h2 className="prompt">Select which breed you think will appear:</h2><div className='col-12 breeds'><select id='bselect' className='box'  onChange={this.handleBreedSelected}>{this.state.options}</select></div></div></div>)
+		return (<div className="col-12"><div className="col-12"><p className='text-center prompt'>{'Select a bet type:' }</p></div><div className=' col-12 bets'><select className='box' onChange={this.betChange}><option>{'--select type--'}</option><option>{'All breeds'}</option><option>{'Hound breeds'}</option><option>{'Spaniel breeds'}</option><option>{'Bulldog breeds'}</option></select></div><div className='col-12 text-center'><h2 className="prompt">Select which breed you think will appear:</h2><div className='col-12 breeds'><select id='bselect' className='box'  onChange={this.handleBreedSelected}>{this.state.options}</select></div></div></div>)
 	}
 
 }
@@ -276,6 +295,8 @@ class DogDisplay extends React.Component{
 		
 		}else if(j==='Spaniel breeds'){
 		this.setState({odds:"Odds of winning: 1:7 (x4 payout)"})
+		}else if(j==='Bulldog breeds'){
+		this.setState({odds:"Odds of winning: 1:2 (x2 payout)"})
 		}
 	}
 	handleSelectedChange(event){
@@ -323,6 +344,27 @@ class DogDisplay extends React.Component{
 	})}
 	else if (this.state.type==='Spaniel breeds'){
 	fetch('https://dog.ceo/api/breed/spaniel/images/random')
+        .then(resp => resp.json())
+        .then(jresp => {
+          if (jresp.status === "success"){
+          	console.log(jresp)
+          	var temp= jresp.message.split('/')
+		var t2= temp[4]
+		temp[4]=temp[4].split('-')
+		if(temp[4].length>1){
+			temp[4]=temp[4][1].substr(0,1).toUpperCase()+temp[4][1].substr(1,temp[4][1].length)
+		}else{
+		temp[4]=t2
+		}
+		
+
+        console.log(temp)
+        this.setState({loadedbreed:temp[4].substr(0,1).toUpperCase()+temp[4].substr(1,temp[4].length),tempurl:jresp.message,selectedBreed:event})
+		}
+
+	})}
+	else if (this.state.type==='Bulldog breeds'){
+	fetch('https://dog.ceo/api/breed/bulldog/images/random')
         .then(resp => resp.json())
         .then(jresp => {
           if (jresp.status === "success"){
@@ -417,6 +459,9 @@ class DogDisplay extends React.Component{
 		}else if (this.state.type==='Spaniel breeds'){
 		this.setState({odds:"Odds of winning: 1:7 (x4 payout)"})
 		mult=4
+		}else if (this.state.type==='Bulldog breeds'){
+		this.setState({odds:"Odds of winning: 1:2 (x2 payout)"})
+		mult=2
 		}
 
 		this.setState({imgurl:this.state.tempurl,displayed:"Currently displayed breed: "+this.state.loadedbreed, submitted: true, disable:true})
