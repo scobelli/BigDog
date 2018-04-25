@@ -31,10 +31,11 @@ class SubmitBet extends React.Component{
 		this.setState({submittedBet:this.refs.in.value})
 		this.props.onBetEntry(this.refs.in.value)
 		document.getElementById("bet").value=""
+		document.get
 
 	}
 	render(){
-		return(<div className='col-12'><form className="col-12" onSubmit={e => e.preventDefault()}><div><p className='prompt text-center'>Enter the amount you wish to bet: </p></div><div><input id='bet' className="center-block" type='text' ref='in'></input></div></form><div className='col-12 '><button className='center-block mt-15 box ' onClick={this.handleBetEntry}>Submit</button></div></div>)
+		return(<div className='col-12'><form className="col-12" onSubmit={e => e.preventDefault()}><div><p className='prompt text-center mt0'>Enter the amount you wish to bet: </p></div><div><input id='bet' className="center-block" type='text' ref='in'></input></div></form><div className='col-12 '><button disabled={this.props.disable} className='center-block mt-15 box ' onClick={this.handleBetEntry}>Submit</button></div></div>)
 	}
 
 }
@@ -61,7 +62,7 @@ class OddsDisplay extends React.Component{
 class BetSelect extends React.Component{
 	constructor(props){
 		super(props)
-		this.state={options:[]}
+		this.state={options:<option value='--select breed--' key='--select breed--'>--select breed--</option>}
 		this.betChange=this.betChange.bind(this)
 		this.handleBreedSelected=this.handleBreedSelected.bind(this)
 
@@ -110,9 +111,28 @@ class BetSelect extends React.Component{
 	
 
 	}
+	else if (event.target.value=='Spaniel breeds'){
+	fetch('https://dog.ceo/api/breed/spaniel/list')
+      .then(result=>result.json())
+      .then(breeds=>this.setState({breeds: breeds.message.map(u=>u.substr(0,1).toUpperCase()+u.substr(1,u.length))}))
+      .then(res=>{ if (this.state.breeds.length === 0)
+      this.setState({options: <option value="loading" key="loading">loading...</option>})
+    else {
+
+      this.setState({options: ['--select breed--'].concat(this.state.breeds)
+        .map(b=>
+            <option value={b} key={b}>{b}</option>
+          )})
+	console.log(this.state.options[1])
+     
+    }})
+      .catch(err=>console.log("Couldn't fetch dog breeds", err))
+	
+
+	}
 	}
 	render(){
-		return (<div className="col-12"><div className="col-12"><p className='text-center prompt'>{'Select a bet type:' }</p></div><div className=' col-12 bets'><select className='box' onChange={this.betChange}><option>{'--select type--'}</option><option>{'All breeds'}</option><option>{'Hound breeds'}</option></select></div><div className='col-12 text-center'><h2 className="prompt">Select which breed you think will appear:</h2><div className='col-12 breeds'><select id='bselect' className='box'  onChange={this.handleBreedSelected}>{this.state.options}</select></div></div></div>)
+		return (<div className="col-12"><div className="col-12"><p className='text-center prompt'>{'Select a bet type:' }</p></div><div className=' col-12 bets'><select className='box' onChange={this.betChange}><option>{'--select type--'}</option><option>{'All breeds'}</option><option>{'Hound breeds'}</option><option>{'Spaniel breeds'}</option></select></div><div className='col-12 text-center'><h2 className="prompt">Select which breed you think will appear:</h2><div className='col-12 breeds'><select id='bselect' className='box'  onChange={this.handleBreedSelected}>{this.state.options}</select></div></div></div>)
 	}
 
 }
@@ -170,7 +190,9 @@ class DogDisplay extends React.Component{
     				   id: "",
     				   submitted: false,
 				   type:"",
-				   odds:""}
+				   odds:"",
+				   disable:false,
+				   messg:""}
     	this.handleSelectedChange=this.handleSelectedChange.bind(this)
     	this.handleBetSubmitted= this.handleBetSubmitted.bind(this)
     	this.handleGoogleInfomation = this.handleGoogleInfomation.bind(this)
@@ -197,10 +219,11 @@ class DogDisplay extends React.Component{
 
 		ReactDOM.render(
 		  <GoogleLogin
-		    className = "Google"
+		    className = "Google signin"
 		    id = "Google"
 		    clientId="954169837234-2sjs0c5ie2vg5use5oaigjouudqr2k8o.apps.googleusercontent.com"
 		    buttonText="Sign in with Google"
+		    
 		    onSuccess={responseGoogle}
 		    onFailure={responseGoogle}
 		  />,
@@ -244,13 +267,15 @@ class DogDisplay extends React.Component{
 	}	
 	handleSelectedBet(j){
 		console.log(j)
-		this.setState({type:j})
+		this.setState({type:j, selectedBreed:"--select breed--"})
 		if(j==='All breeds'){
-		this.setState({odds:"Odds of winning: 1:81"})
+		this.setState({odds:"Odds of winning: 1:81 (x10 payout)"})
 		
 		}else if (j==='Hound breeds'){
-		this.setState({odds:"Odds of winning: 1:6"})
+		this.setState({odds:"Odds of winning: 1:6 (x3 payout)"})
 		
+		}else if(j==='Spaniel breeds'){
+		this.setState({odds:"Odds of winning: 1:7 (x4 payout)"})
 		}
 	}
 	handleSelectedChange(event){
@@ -296,6 +321,27 @@ class DogDisplay extends React.Component{
 		}
 
 	})}
+	else if (this.state.type==='Spaniel breeds'){
+	fetch('https://dog.ceo/api/breed/spaniel/images/random')
+        .then(resp => resp.json())
+        .then(jresp => {
+          if (jresp.status === "success"){
+          	console.log(jresp)
+          	var temp= jresp.message.split('/')
+		var t2= temp[4]
+		temp[4]=temp[4].split('-')
+		if(temp[4].length>1){
+			temp[4]=temp[4][1].substr(0,1).toUpperCase()+temp[4][1].substr(1,temp[4][1].length)
+		}else{
+		temp[4]=t2
+		}
+		
+
+        console.log(temp)
+        this.setState({loadedbreed:temp[4].substr(0,1).toUpperCase()+temp[4].substr(1,temp[4].length),tempurl:jresp.message,selectedBreed:event})
+		}
+
+	})}
 
 
 
@@ -305,7 +351,7 @@ class DogDisplay extends React.Component{
 
 		this.setState({imgurl: 'http://via.placeholder.com/350x350', 
 					   submitted: false,
-					  displayed:"Currently displayed breed: None"})
+					  displayed:"Currently displayed breed: None", disable:false, messg:""})
 	}
 
 	
@@ -316,10 +362,14 @@ class DogDisplay extends React.Component{
 	* param multipier: integer value for the odds, for example if odds were 1:81, multipler = 81
 	*/
 	updateDataBase(win, amountBet, multiplier){
+		var msg=""
 		if(win){
 			amountBet = amountBet * multiplier
+			msg="Congratulations! You won $"+amountBet+"!"
+			
 		}else{
 			amountBet = amountBet * -1
+			msg="Incorrect! You lost $"+amountBet*-1+"!"
 		}
 
 		fetch(SERVER_URL+"update/"+this.state.id+"&"+amountBet)
@@ -333,6 +383,7 @@ class DogDisplay extends React.Component{
 				this.setState({currmon: currmon, 
 							   wins: wins,
 							   losses: losses,
+							   messg:msg
 							   })
 				console.log(json)        		
         	}).catch(error => console.log("ERROR", error))		
@@ -342,27 +393,33 @@ class DogDisplay extends React.Component{
 		console.log(this.state.selectedBreed)
 		console.log(o)
 		if(o<1){
+		this.setState({disable:false})
 		alert('You must enter a bet of at least 1$')
 		return
 		}
 		if(this.state.currmon<o){
+		this.setState({disable:false})
 		alert("Insufficient funds")
 		return 
 		}
 		if(this.state.selectedBreed==="" || this.state.selectedBreed==="--select breed--"){
+		this.setState({disable:false})
 		alert('Please select a breed to bet on')
 		return
 		}
 		var mult=0
 		if(this.state.type==='All breeds'){
-		this.setState({odds:"Odds of winning: 1:81"})
+		this.setState({odds:"Odds of winning: 1:81 (x10 payout)"})
 		mult=10
 		}else if (this.state.type==='Hound breeds'){
-		this.setState({odds:"Odds of winning: 1:6"})
-		mult=5
+		this.setState({odds:"Odds of winning: 1:6 (x3 payout)"})
+		mult=3
+		}else if (this.state.type==='Spaniel breeds'){
+		this.setState({odds:"Odds of winning: 1:7 (x4 payout)"})
+		mult=4
 		}
 
-		this.setState({imgurl:this.state.tempurl,displayed:"Currently displayed breed: "+this.state.loadedbreed, submitted: true})
+		this.setState({imgurl:this.state.tempurl,displayed:"Currently displayed breed: "+this.state.loadedbreed, submitted: true, disable:true})
 		if(this.state.loadedbreed===this.state.selectedBreed){
 		this.updateDataBase(true, o, mult)
 		}else{
@@ -386,19 +443,19 @@ class DogDisplay extends React.Component{
 						<Row className="col-12">
 						<div className='col-2'></div>
 						<div className="col-8 val" >
-							<h1 className="text-center heading" >Welcome to Big Dog Bets {this.state.name}!</h1>
+							<h1 className="text-center heading" >Welcome to Big Dog Bets{'\n'+this.state.name}!</h1>
 						
 						
 					
 						<Row>
-							<div className="col-12 "><p className=" currbreed text-center"><b>{this.state.displayed}</b></p></div>
+							<div className="col-12 "><p className=" currbreed text-center">{this.state.displayed+'\n'+this.state.messg}</p></div>
 							<img className="img-responsive center-block" src={this.state.imgurl}/>
 							<BetSelect onSelected={this.handleSelectedChange} onBetSelected={this.handleSelectedBet}/>
 							
 							
 							
-							<div className='col-12'><p className='prompt text-center'>{this.state.odds}</p></div>
-							<SubmitBet onBetEntry={this.handleBetSubmitted}/>
+							<div className='col-12'><p className='prompt text-center mb10'>{this.state.odds}</p></div>
+							<SubmitBet disable={this.state.disable} onBetEntry={this.handleBetSubmitted}/>
 						</Row>
 						</div>
 						<div className='col-2 val '>
@@ -418,6 +475,8 @@ class DogDisplay extends React.Component{
 			return(
 					<div>
 						<h1 id="signInHeader">Please Sign In With Google To Begin</h1>
+						<h1 className="loginheading text-center"> Big Dog Bets</h1>
+						<h2 className="subheading text-center"> The best place to bet on random images of dogs.</h2>
 						<div id= "googleButton"></div> 
 					</div>
 				)

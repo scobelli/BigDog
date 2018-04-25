@@ -10,7 +10,24 @@ body {
 	margin-bottom: 20px;
 	text-decoration: underline;
 	color:#E87722;
+	white-space:pre-wrap;
 }
+.subheading{
+	font-size: 2vw;
+	margin-bottom: 20px;
+	color:#E87722;
+	white-space:pre-wrap;
+}
+
+.loginheading{
+	font-size: 11vw;
+	margin-bottom: 100px;
+	margin-top:5%;
+	color:#E87722;
+	
+	white-space:pre-wrap;
+}
+
 
 .breeds{
 	display: block;
@@ -66,6 +83,7 @@ img{
 .currbreed{
 	font-size: 30px;
 	color:#59CBE8;
+	white-space:pre-wrap;
 }
 
 .bord{
@@ -84,4 +102,26 @@ img{
 
 .mt-15{
 	margin-top:15px;
+}
+
+button:disabled {
+    background: #F5F5F5;
+    color : #C3C3C3;
+}
+
+.mb10{
+	margin-bottom:10px;
+}
+.mt0{
+	margin-top:0px;
+}
+.signin{
+	display:block;
+	margin:0 auto;
+	font-size:20px;
+	margin-top:15px;
+	height:75px;
+	width: 350px;
+	
+
 }
