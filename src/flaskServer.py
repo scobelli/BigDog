@@ -7,6 +7,7 @@ import sys
 from pymongo import MongoClient
 from pprint import pprint
 import uuid
+import sys
 
 # Set the app server syntax so we can define app routes/
 app = Flask(__name__)
@@ -72,12 +73,11 @@ check if userId is in database, if so return information, if not create new acco
 """
 @app.route('/login/<userId>')
 def login(userId):
-
     user = collection.find_one({"_id": userId})
     if user is None:
         user = {"_id": userId, "money": 500, "wins": 0, "losses": 0}
         collection.insert_one(user)
-    
+
     if user["money"] <= 0:
         user["money"] = 500
         collection.update_one({"_id": userId},{"$set": user})

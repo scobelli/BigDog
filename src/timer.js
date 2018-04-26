@@ -1,11 +1,10 @@
-import ReactDOM from 'react-dom'
-import React, { Component, PropTypes } from 'react'
- 
+import React, { Component } from 'react'
+
 class Timers extends Component {
   /* delay is just the delay on showing the update of the timer */
 	 constructor(){
 	    super();
-	    
+
 	    this.state = {
 	       timer: null,
 	       counter: 0,
@@ -37,7 +36,7 @@ class Timers extends Component {
 	      		picture: this.state.picture + 1
 	    	})
 
-	    	if(this.state.picture==4){
+	    	if(this.state.picture === 4){
 	    		this.setState({
 	      			picture: 0
 	    		})
