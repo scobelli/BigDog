@@ -4,7 +4,7 @@ import { Row } from 'reactstrap';
 import { GoogleLogin } from 'react-google-login';
 import Timers from './timer.js';
 
-var API = "http://localhost:8000"
+var API = "http://ec2-13-58-138-173.us-east-2.compute.amazonaws.com:8000"
 
 class DisplayWinLoss extends React.Component{
 	render(){
