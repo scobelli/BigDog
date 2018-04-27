@@ -1,10 +1,9 @@
-import React, { Component } from 'react';
+import React from 'react';
 import logo from './logo.svg';
 import './App.css';
 import { Container } from 'reactstrap';
 import { Row } from 'reactstrap';
 import { GoogleLogin } from 'react-google-login';
-import ReactDOM from 'react-dom';
 import Timers from './timer.js';
 
 
@@ -76,7 +75,7 @@ class BetSelect extends React.Component{
 	betChange(event){
 	console.log(event.target.value)
 	this.props.onBetSelected(event.target.value)
-	if(event.target.value=='All breeds'){
+	if(event.target.value==='All breeds'){
 	fetch('https://dog.ceo/api/breeds/list')
       .then(result=>result.json())
       .then(breeds=>this.setState({breeds: breeds.message.map(u=>u.substr(0,1).toUpperCase()+u.substr(1,u.length))}))
@@ -92,7 +91,7 @@ class BetSelect extends React.Component{
      
     }})
       .catch(err=>console.log("Couldn't fetch dog breeds", err))
-	}else if (event.target.value=='Hound breeds'){
+	}else if (event.target.value==='Hound breeds'){
 	fetch('https://dog.ceo/api/breed/hound/list')
       .then(result=>result.json())
       .then(breeds=>this.setState({breeds: breeds.message.map(u=>u.substr(0,1).toUpperCase()+u.substr(1,u.length))}))
@@ -111,7 +110,7 @@ class BetSelect extends React.Component{
 	
 
 	}
-	else if (event.target.value=='Spaniel breeds'){
+	else if (event.target.value==='Spaniel breeds'){
 	fetch('https://dog.ceo/api/breed/spaniel/list')
       .then(result=>result.json())
       .then(breeds=>this.setState({breeds: breeds.message.map(u=>u.substr(0,1).toUpperCase()+u.substr(1,u.length))}))
@@ -130,7 +129,7 @@ class BetSelect extends React.Component{
 	
 
 	}
-	else if (event.target.value=='Bulldog breeds'){
+	else if (event.target.value==='Bulldog breeds'){
 	fetch('https://dog.ceo/api/breed/bulldog/list')
       .then(result=>result.json())
       .then(breeds=>this.setState({breeds: breeds.message.map(u=>u.substr(0,1).toUpperCase()+u.substr(1,u.length))}))
@@ -215,15 +214,14 @@ class DogDisplay extends React.Component{
     	this.handleSelectedChange=this.handleSelectedChange.bind(this)
     	this.handleBetSubmitted= this.handleBetSubmitted.bind(this)
     	this.handleGoogleInfomation = this.handleGoogleInfomation.bind(this)
-	this.handleSelectedBet=this.handleSelectedBet.bind(this)
-	this.updateDataBase=this.updateDataBase.bind(this)
+		this.handleSelectedBet=this.handleSelectedBet.bind(this)
+		this.updateDataBase=this.updateDataBase.bind(this)
+		this.responseGoogle=this.responseGoogle.bind(this)
+
 	}
 
-	componentDidMount(){
-		console.log("mounted")
-
-		const responseGoogle = (response) => {      
-		  var token = response.Zi.id_token;      
+	responseGoogle(response){
+		 var token = response.Zi.id_token;      
 		  fetch("https://www.googleapis.com/oauth2/v3/tokeninfo?id_token=" + token )
 		  .then(jsonResponse => {
 		    var json = jsonResponse.json()
@@ -234,20 +232,11 @@ class DogDisplay extends React.Component{
 		    this.handleGoogleInfomation(id, name)
 		})
 		.catch( error => console.log("ERROR", error))       
-		}
+			
+	}
 
-		ReactDOM.render(
-		  <GoogleLogin
-		    className = "Google signin"
-		    id = "Google"
-		    clientId="954169837234-2sjs0c5ie2vg5use5oaigjouudqr2k8o.apps.googleusercontent.com"
-		    buttonText="Sign in with Google"
-		    
-		    onSuccess={responseGoogle}
-		    onFailure={responseGoogle}
-		  />,
-		  document.getElementById('googleButton')
-		);
+	componentDidMount(){
+		console.log("mounted")
 	}
 
 	handleGoogleInfomation(id, name){		
@@ -301,7 +290,7 @@ class DogDisplay extends React.Component{
 	}
 	handleSelectedChange(event){
 		console.log(event)
-		if(this.state.type=='All breeds'){
+		if(this.state.type==='All breeds'){
 		 fetch('https://dog.ceo/api/breeds/image/random')
         .then(resp => resp.json())
         .then(jresp => {
@@ -522,7 +511,15 @@ class DogDisplay extends React.Component{
 						<h1 id="signInHeader">Please Sign In With Google To Begin</h1>
 						<h1 className="loginheading text-center"> Big Dog Bets</h1>
 						<h2 className="subheading text-center"> The best place to bet on random images of dogs.</h2>
-						<div id= "googleButton"></div> 
+						<GoogleLogin
+						    className = "Google signin"
+						    id = "Google"
+						    clientId="954169837234-2sjs0c5ie2vg5use5oaigjouudqr2k8o.apps.googleusercontent.com"
+						    buttonText="Sign in with Google"
+						    
+						    onSuccess={this.responseGoogle}
+						    onFailure={this.responseGoogle}
+						  />
 					</div>
 				)
 		}
