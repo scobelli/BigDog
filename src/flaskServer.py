@@ -11,8 +11,8 @@ import uuid
 # Set the app server syntax so we can define app routes/
 app = Flask(__name__)
 
-#uri = "mongodb://owner:"+password+"@eg-mongodb.bucknell.edu/"+ username
-uri = "localhost"
+uri = "mongodb://owner:Eiwe9fae@eg-mongodb.bucknell.edu/sjc032"
+#uri = "localhost"
 client = MongoClient(uri)
 
 #creating a test database
@@ -71,7 +71,7 @@ def login(userId):
     if user is None:
         user = {"_id": userId, "money": 500, "wins": 0, "losses": 0}
         collection.insert_one(user)
-    
+
     if user["money"] <= 0:
         user["money"] = 500
         collection.update_one({"_id": userId},{"$set": user})
