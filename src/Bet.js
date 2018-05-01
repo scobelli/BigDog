@@ -1,3 +1,5 @@
+import React from 'react';
+
 class BetSelect extends React.Component{
 	constructor(props){
 		super(props)
