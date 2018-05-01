@@ -1,4 +1,4 @@
 import './App.css';
-import DogDisplay from"./Dog.js";
+import DogDisplay from"./User.js";
 
 export default DogDisplay;
