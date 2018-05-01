@@ -11,8 +11,8 @@ import uuid
 # Set the app server syntax so we can define app routes/
 app = Flask(__name__)
 
-uri = "mongodb://owner:Eiwe9fae@eg-mongodb.bucknell.edu/sjc032"
-#uri = "localhost"
+#uri = "mongodb://owner:Eiwe9fae@eg-mongodb.bucknell.edu/sjc032"
+uri = "localhost"
 client = MongoClient(uri)
 
 #creating a test database

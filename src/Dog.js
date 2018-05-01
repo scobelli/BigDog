@@ -4,7 +4,7 @@ import { GoogleLogin } from 'react-google-login';
 import Timers from './timer.js';
 import BetSelect from './Bet.js'
 import {MoneyDisplay, SubmitBet, DisplayWinLoss} from './Utils.js'
-var API = "http://localhost:8000"
+var API = "http://ec2-13-58-138-173.us-east-2.compute.amazonaws.com:8000"
 class DogDisplay extends React.Component{
 	constructor(props){
 		super(props)
